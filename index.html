@@ -958,6 +958,7 @@
             mediaRecorder: null,
             audioChunks: [],
             isRecording: false,
+            currentRecordingItemId: null,
             speechRecognition: null,
             isRecognizing: false,
             recognizedText: '',
@@ -1198,7 +1199,7 @@
                         <button class="btn-slow" onclick="speak('${item.english.replace(/'/g, "\\'")}', 0.6)">
                             🔊 Lento
                         </button>
-                        <button class="btn-record" onclick="startRecordingSpeechWithStop(${state.currentSpeechIndex})">
+                        <button class="btn-record" id="record-speech-${state.currentSpeechIndex}" onclick="toggleRecordingSpeech(${state.currentSpeechIndex})">
                             🎙 Gravar
                         </button>
                         <button class="btn-practiced ${state.speechPracticed[state.currentSpeechIndex] ? 'marked' : ''}"
@@ -1241,19 +1242,20 @@
             }
         }
 
-        function startRecordingSpeech(index) {
-            startRecording(`speech-${index}`);
-        }
-
-        function startRecordingSpeechWithStop(index) {
+        function toggleRecordingSpeech(index) {
+            const itemId = `speech-${index}`;
+            const btn = document.getElementById(`record-speech-${index}`);
+            
             if (!state.isRecording) {
-                startRecording(`speech-${index}`);
-                // Depois de 5 segundos, parar automaticamente
-                setTimeout(() => {
-                    if (state.isRecording) {
-                        stopRecording();
-                    }
-                }, 5000);
+                // Começar a gravar
+                startRecording(itemId);
+                btn.textContent = '⏹ Parar';
+                btn.classList.add('recording');
+            } else if (state.currentRecordingItemId === itemId) {
+                // Parar a gravação
+                stopRecording();
+                btn.textContent = '🎙 Gravar';
+                btn.classList.remove('recording');
             }
         }
 
@@ -1301,7 +1303,7 @@
                             <button class="btn-listen" onclick="speak('${qa.answerEN.replace(/'/g, "\\'")}', 0.8)">
                                 🔊 Ouvir resposta
                             </button>
-                            <button class="btn-record" onclick="startRecordingJuryWithStop(${state.currentJuryIndex})">
+                            <button class="btn-record" id="record-jury-${state.currentJuryIndex}" onclick="toggleRecordingJury(${state.currentJuryIndex})">
                                 🎙 Gravar minha resposta
                             </button>
                             <button class="btn-practiced ${state.juryPracticed[state.currentJuryIndex] ? 'marked' : ''}"
@@ -1350,19 +1352,20 @@
             }
         }
 
-        function startRecordingJury(index) {
-            startRecording(`jury-${index}`);
-        }
-
-        function startRecordingJuryWithStop(index) {
+        function toggleRecordingJury(index) {
+            const itemId = `jury-${index}`;
+            const btn = document.getElementById(`record-jury-${index}`);
+            
             if (!state.isRecording) {
-                startRecording(`jury-${index}`);
-                // Depois de 8 segundos, parar automaticamente (respostas são mais longas)
-                setTimeout(() => {
-                    if (state.isRecording) {
-                        stopRecording();
-                    }
-                }, 8000);
+                // Começar a gravar
+                startRecording(itemId);
+                btn.textContent = '⏹ Parar';
+                btn.classList.add('recording');
+            } else if (state.currentRecordingItemId === itemId) {
+                // Parar a gravação
+                stopRecording();
+                btn.textContent = '🎙 Gravar';
+                btn.classList.remove('recording');
             }
         }
 
@@ -1372,6 +1375,7 @@
 
         async function startRecording(itemId) {
             try {
+                state.currentRecordingItemId = itemId;
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 
                 state.mediaRecorder = new MediaRecorder(stream);
@@ -1382,17 +1386,18 @@
                     state.audioChunks.push(event.data);
                 };
 
-                state.mediaRecorder.onstop = async () => {
+                state.mediaRecorder.onstop = () => {
                     const audioBlob = new Blob(state.audioChunks, { type: 'audio/wav' });
                     const audioUrl = URL.createObjectURL(audioBlob);
                     state.lastRecordings[itemId] = audioUrl;
                     state.isRecording = false;
                     
-                    // Iniciar reconhecimento de fala
-                    await recognizeAndValidate(itemId);
+                    // Mostrar o áudio gravado e botão para reproduzir
+                    displayRecordingResult(itemId, audioUrl);
                 };
 
                 state.mediaRecorder.start();
+                updateValidationUI(itemId, 'A gravar...', null);
                 
             } catch (error) {
                 showError("Permissão de microfone negada. Ativa nas definições do browser.");
@@ -1406,178 +1411,35 @@
         }
 
         // ==============================
-        // RECONHECIMENTO DE FALA E VALIDAÇÃO
+        // RESULTADO DA GRAVAÇÃO
         // ==============================
 
-        async function recognizeAndValidate(itemId) {
-            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = 'en-GB';
-            recognition.continuous = false;
-            recognition.interimResults = false;
+        function displayRecordingResult(itemId, audioUrl) {
+            const validationDiv = document.getElementById(`${itemId}-validation`);
+            if (!validationDiv) return;
 
-            const recordingBlob = new Blob(state.audioChunks, { type: 'audio/wav' });
-            const audioUrl = URL.createObjectURL(recordingBlob);
-
-            // Criar elemento de áudio temporário para reproduzir
-            const audio = new Audio(audioUrl);
-            audio.onended = () => URL.revokeObjectURL(audioUrl);
-
-            // Usar Web Speech API Recognition
-            return new Promise((resolve) => {
-                recognition.onstart = () => {
-                    updateValidationUI(itemId, 'Aguardando reconhecimento...', null);
-                };
-
-                recognition.onresult = (event) => {
-                    let transcript = '';
-                    for (let i = event.resultIndex; i < event.results.length; i++) {
-                        transcript += event.results[i][0].transcript + ' ';
-                    }
-                    
-                    state.recognizedText = transcript.trim();
-                    
-                    // Validar contra o texto esperado
-                    validatePronunciation(itemId, state.recognizedText);
-                    resolve();
-                };
-
-                recognition.onerror = (event) => {
-                    updateValidationUI(itemId, `Erro: ${event.error}`, null);
-                    resolve();
-                };
-
-                // Reproduzir o áudio gravado para reconhecimento
-                // Nota: Web Speech Recognition funciona melhor com áudio em tempo real
-                // Para ficheiros gravados, usamos uma abordagem alternativa
-                recognition.start();
-                audio.play();
-            });
-        }
-
-        function validatePronunciation(itemId, recognizedText) {
-            let expectedText = '';
-            let moduleType = '';
-
-            // Determinar o texto esperado baseado no tipo de item
-            if (itemId.startsWith('speech-')) {
-                const index = parseInt(itemId.split('-')[1]);
-                expectedText = openingSpeech[index].english;
-                moduleType = 'speech';
-            } else if (itemId.startsWith('jury-')) {
-                const index = parseInt(itemId.split('-')[1]);
-                expectedText = juryQA[index].answerEN;
-                moduleType = 'jury';
-            }
-
-            // Calcular similaridade
-            const similarity = calculateSimilarity(
-                normalizeText(expectedText),
-                normalizeText(recognizedText)
-            );
-
-            const isCorrect = similarity >= 0.7; // 70% de similaridade ou mais é considerado correto
-
-            updateValidationUI(itemId, recognizedText, {
-                isCorrect,
-                expectedText,
-                similarity: Math.round(similarity * 100),
-                moduleType
-            });
-        }
-
-        function normalizeText(text) {
-            return text
-                .toLowerCase()
-                .replace(/[.,!?;:—–-]/g, '')
-                .replace(/\s+/g, ' ')
-                .trim();
-        }
-
-        function calculateSimilarity(str1, str2) {
-            // Algoritmo de Levenshtein para calcular similaridade
-            const len1 = str1.length;
-            const len2 = str2.length;
-            const matrix = Array(len2 + 1).fill(null).map(() => Array(len1 + 1).fill(0));
-
-            for (let i = 0; i <= len1; i++) matrix[0][i] = i;
-            for (let j = 0; j <= len2; j++) matrix[j][0] = j;
-
-            for (let j = 1; j <= len2; j++) {
-                for (let i = 1; i <= len1; i++) {
-                    const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1;
-                    matrix[j][i] = Math.min(
-                        matrix[j][i - 1] + 1,
-                        matrix[j - 1][i] + 1,
-                        matrix[j - 1][i - 1] + indicator
-                    );
-                }
-            }
-
-            const distance = matrix[len2][len1];
-            const maxLen = Math.max(len1, len2);
-            return 1 - (distance / maxLen);
-        }
-
-        function updateValidationUI(itemId, recognizedText, validationData) {
-            const container = document.getElementById(`${itemId}-validation`);
-            
-            if (!container) {
-                // Criar container se não existir
-                const speechContainer = document.getElementById('speech-container') || document.getElementById('jury-container');
-                const newContainer = document.createElement('div');
-                newContainer.id = `${itemId}-validation`;
-                speechContainer.appendChild(newContainer);
-            }
-
-            if (!validationData) {
-                // Mostrar apenas o status de reconhecimento
-                document.getElementById(`${itemId}-validation`).innerHTML = `
-                    <div class="recording-status">
-                        <div class="recording-indicator"></div>
-                        ${recognizedText}
-                    </div>
-                `;
-                return;
-            }
-
-            // Mostrar resultado detalhado
-            const { isCorrect, similarity } = validationData;
-            const resultClass = isCorrect ? 'correct' : 'incorrect';
-            const resultIcon = isCorrect ? '✅' : '❌';
-            const resultText = isCorrect ? 'Excelente!' : 'Precisa de ajustes';
-
-            document.getElementById(`${itemId}-validation`).innerHTML = `
-                <div class="validation-result ${resultClass}">
+            validationDiv.innerHTML = `
+                <div class="validation-result correct">
                     <div class="validation-title">
-                        ${resultIcon} ${resultText}
+                        ✅ Gravação concluída
                     </div>
 
-                    <div class="accuracy-score">
-                        <div class="accuracy-bar">
-                            <div class="accuracy-fill" style="width: ${similarity}%"></div>
-                        </div>
-                        <div class="accuracy-text">${similarity}%</div>
+                    <div class="button-group" style="margin-top: 15px;">
+                        <button class="btn-listen" onclick="playRecording('${audioUrl}')">
+                            ▶ Ouvir a minha gravação
+                        </button>
                     </div>
 
-                    <div class="validation-label">O que foi reconhecido:</div>
-                    <div class="validation-text">
-                        "${recognizedText || '(nenhum som detectado)'}"
+                    <div style="margin-top: 15px; padding: 10px; background-color: #0F1923; border-radius: 6px; border-left: 3px solid #D4A017; font-size: 13px; color: #D4A017;">
+                        💡 Dica: Repete quantas vezes for necessário até te sentires confiante com a pronúncia.
                     </div>
-
-                    <div class="validation-label">O que era esperado:</div>
-                    <div class="validation-text">
-                        "${validationData.expectedText}"
-                    </div>
-
-                    ${similarity < 100 ? `
-                        <div style="margin-top: 15px; padding: 10px; background-color: #0F1923; border-radius: 6px; border-left: 3px solid #D4A017; font-size: 13px; color: #D4A017;">
-                            💡 Dica: Repete a frase com mais cuidado. Foca na pronúncia de cada palavra.
-                        </div>
-                    ` : ''}
                 </div>
             `;
+        }
 
-            showMotivationMessage(document.getElementById(`${itemId}-validation`));
+        function playRecording(audioUrl) {
+            const audio = new Audio(audioUrl);
+            audio.play();
         }
 
         // ==============================
