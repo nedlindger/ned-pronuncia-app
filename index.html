@@ -1,0 +1,1517 @@
+<!-- App de Treino de Pronúncia — Defesa de Dissertação — Ned-Lindger Neto da Conceição -->
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treino de Pronúncia — Ned-Lindger</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+Pro:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background-color: #0F1923;
+            color: #E6EDF3;
+            overflow-x: hidden;
+        }
+
+        /* Layout Principal */
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #162333;
+            border-right: 1px solid #1F6FEB;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+        }
+
+        .progress-bar-container {
+            background-color: #162333;
+            padding: 20px;
+            border-bottom: 1px solid #1F6FEB;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .progress-label {
+            font-weight: 600;
+            color: #D4A017;
+            font-size: 14px;
+        }
+
+        .session-time {
+            font-size: 14px;
+            color: #8B949E;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #0F1923;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #1F6FEB;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1F6FEB, #D4A017);
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 40px 50px;
+            overflow-y: auto;
+            background-color: #0F1923;
+        }
+
+        /* Barra Lateral */
+        .sidebar-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            color: #D4A017;
+            margin-bottom: 25px;
+            text-align: center;
+            border-bottom: 2px solid #1F6FEB;
+            padding-bottom: 10px;
+        }
+
+        .module-button {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #0F1923;
+            border: 2px solid #1F6FEB;
+            color: #E6EDF3;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .module-button:hover {
+            background-color: #1F6FEB;
+            color: #0F1923;
+            box-shadow: 0 0 15px rgba(31, 111, 235, 0.5);
+        }
+
+        .module-button.active {
+            background-color: #1F6FEB;
+            color: #0F1923;
+            box-shadow: 0 0 20px rgba(31, 111, 235, 0.6);
+        }
+
+        /* Títulos */
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: #D4A017;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: #1F6FEB;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        /* Cards */
+        .card {
+            background-color: #162333;
+            border: 1px solid #1F6FEB;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 6px 20px rgba(31, 111, 235, 0.3);
+            border-color: #D4A017;
+        }
+
+        .card.completed {
+            background-color: #1a3a2e;
+            border-color: #2EA043;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1F6FEB;
+            margin-bottom: 10px;
+        }
+
+        .card-subtitle {
+            font-size: 14px;
+            color: #8B949E;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .card-content {
+            margin-bottom: 15px;
+        }
+
+        .english-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #E6EDF3;
+            margin-bottom: 8px;
+        }
+
+        .phonetic-text {
+            font-size: 14px;
+            color: #E05C5C;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .portuguese-text {
+            font-size: 14px;
+            color: #2EA043;
+            margin-bottom: 8px;
+        }
+
+        .tip-box {
+            background-color: #0F1923;
+            border-left: 4px solid #D4A017;
+            padding: 12px;
+            margin-top: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #8B949E;
+        }
+
+        /* Botões */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-listen {
+            background-color: #1F6FEB;
+            color: white;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .btn-listen:hover {
+            background-color: #4a8cff;
+            box-shadow: 0 0 15px rgba(31, 111, 235, 0.5);
+        }
+
+        .btn-listen.playing {
+            animation: pulse 1.5s infinite;
+        }
+
+        .btn-record {
+            background-color: #E05C5C;
+            color: white;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .btn-record:hover {
+            background-color: #ff7a7a;
+            box-shadow: 0 0 15px rgba(224, 92, 92, 0.5);
+        }
+
+        .btn-record.recording {
+            animation: pulse-red 1s infinite;
+        }
+
+        .btn-practiced {
+            background-color: #2EA043;
+            color: white;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .btn-practiced:hover {
+            background-color: #3fb050;
+            box-shadow: 0 0 15px rgba(46, 160, 67, 0.5);
+        }
+
+        .btn-practiced.marked {
+            background-color: #1a7a30;
+            box-shadow: 0 0 15px rgba(46, 160, 67, 0.5);
+        }
+
+        .btn-secondary {
+            background-color: #8B949E;
+            color: white;
+            padding: 8px 15px;
+            font-size: 12px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #a8b5c0;
+        }
+
+        .btn-slow {
+            background-color: #D4A017;
+            color: #0F1923;
+            flex: 1;
+            min-width: 140px;
+            font-weight: 700;
+        }
+
+        .btn-slow:hover {
+            background-color: #e5b82f;
+            box-shadow: 0 0 15px rgba(212, 160, 23, 0.5);
+        }
+
+        /* Animações */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(224, 92, 92, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(224, 92, 92, 0); }
+        }
+
+        @keyframes soundWave {
+            0%, 100% { height: 10px; }
+            50% { height: 30px; }
+        }
+
+        .sound-wave {
+            display: flex;
+            gap: 3px;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+        }
+
+        .sound-bar {
+            width: 3px;
+            height: 10px;
+            background-color: #1F6FEB;
+            border-radius: 2px;
+            animation: soundWave 0.6s ease-in-out infinite;
+        }
+
+        .sound-bar:nth-child(2) { animation-delay: 0.1s; }
+        .sound-bar:nth-child(3) { animation-delay: 0.2s; }
+
+        /* Flashcard */
+        .flashcard {
+            perspective: 1000px;
+            cursor: pointer;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            border: 2px solid #1F6FEB;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .flashcard-front {
+            background: linear-gradient(135deg, #1F6FEB, #162333);
+        }
+
+        .flashcard-back {
+            background: linear-gradient(135deg, #2EA043, #162333);
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: #E6EDF3;
+            margin-bottom: 10px;
+        }
+
+        .flashcard-subtitle {
+            font-size: 14px;
+            color: #D4A017;
+        }
+
+        /* Timer */
+        .timer {
+            font-size: 14px;
+            color: #E05C5C;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        /* Navegação Discurso */
+        .speech-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .speech-indicator {
+            font-size: 14px;
+            color: #8B949E;
+            font-weight: 600;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-nav {
+            background-color: #1F6FEB;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-nav:hover {
+            background-color: #4a8cff;
+        }
+
+        .btn-nav:disabled {
+            background-color: #8B949E;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        /* Área de Preparação (Júri) */
+        .prep-area {
+            background-color: #162333;
+            border: 2px dashed #1F6FEB;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .prep-text {
+            font-size: 14px;
+            color: #8B949E;
+            margin-bottom: 15px;
+        }
+
+        /* Mensagens de Motivação */
+        .motivation-message {
+            background-color: #1a3a2e;
+            border-left: 4px solid #2EA043;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2EA043;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Contadores Flashcard */
+        .flashcard-stats {
+            background-color: #162333;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            border: 1px solid #1F6FEB;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #D4A017;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #8B949E;
+            margin-top: 5px;
+        }
+
+        /* Mensagem de Erro */
+        .error-message {
+            background-color: #5c1c1c;
+            border: 1px solid #E05C5C;
+            padding: 15px;
+            border-radius: 6px;
+            color: #ff9999;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #1F6FEB;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .flashcard {
+                height: 200px;
+            }
+
+            .flashcard-front, .flashcard-back {
+                padding: 25px;
+            }
+
+            .flashcard-text {
+                font-size: 18px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn-listen, .btn-record, .btn-practiced, .btn-slow {
+                min-width: unset;
+                width: 100%;
+            }
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none;
+        }
+
+        /* Validação e Feedback */
+        .validation-result {
+            background-color: #162333;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            border-left: 4px solid #1F6FEB;
+        }
+
+        .validation-result.correct {
+            border-left-color: #2EA043;
+            background-color: #1a3a2e;
+        }
+
+        .validation-result.incorrect {
+            border-left-color: #E05C5C;
+            background-color: #3a1a1a;
+        }
+
+        .validation-title {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .validation-result.correct .validation-title {
+            color: #2EA043;
+        }
+
+        .validation-result.incorrect .validation-title {
+            color: #E05C5C;
+        }
+
+        .validation-text {
+            background-color: #0F1923;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #8B949E;
+            border: 1px solid #1F6FEB;
+        }
+
+        .validation-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #D4A017;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        .accuracy-score {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #0F1923;
+            border-radius: 6px;
+        }
+
+        .accuracy-bar {
+            flex: 1;
+            height: 8px;
+            background-color: #1F6FEB;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .accuracy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #E05C5C, #D4A017, #2EA043);
+            transition: width 0.5s ease;
+        }
+
+        .accuracy-text {
+            font-weight: 700;
+            font-size: 14px;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        .recording-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background-color: #162333;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 12px;
+            color: #8B949E;
+        }
+
+        .recording-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #E05C5C;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 49%, 100% { opacity: 1; }
+            50%, 99% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- BARRA LATERAL -->
+        <div class="sidebar">
+            <div class="sidebar-title">📚 Módulos</div>
+            <button class="module-button active" data-module="vocabulary">
+                📖 Vocabulário
+            </button>
+            <button class="module-button" data-module="speech">
+                🎤 Discurso
+            </button>
+            <button class="module-button" data-module="jury">
+                ❓ Simulação Júri
+            </button>
+        </div>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <div class="main-content">
+            <!-- BARRA DE PROGRESSO -->
+            <div class="progress-bar-container">
+                <div class="progress-info">
+                    <span class="progress-label" id="progress-text">0 de 30 itens praticados</span>
+                    <span class="session-time" id="session-time">Sessão: 0 min</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- ÁREA DE CONTEÚDO -->
+            <div class="content-area">
+                <!-- MÓDULO 1: VOCABULÁRIO -->
+                <div id="vocabulary-module" class="module-content">
+                    <h1>📖 Treino de Vocabulário</h1>
+                    <p style="color: #8B949E; margin-bottom: 25px;">Clica no cartão para revelar o significado. Marca os termos que já dominas!</p>
+                    
+                    <div id="flashcard-stats" class="flashcard-stats">
+                        <div class="stat">
+                            <div class="stat-number" id="known-count">0</div>
+                            <div class="stat-label">Já sei 👍</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number" id="unknown-count">30</div>
+                            <div class="stat-label">Preciso de treino 🔄</div>
+                        </div>
+                    </div>
+
+                    <div id="vocabulary-container"></div>
+                </div>
+
+                <!-- MÓDULO 2: DISCURSO -->
+                <div id="speech-module" class="module-content hidden">
+                    <h1>🎤 Discurso de Abertura</h1>
+                    <p style="color: #8B949E; margin-bottom: 25px;">Pratica cada frase do teu discurso de defesa.</p>
+                    
+                    <div class="speech-nav">
+                        <button class="btn-nav" id="btn-prev-speech">← Anterior</button>
+                        <span class="speech-indicator">
+                            Frase <span id="speech-current">1</span> de <span id="speech-total">15</span>
+                        </span>
+                        <button class="btn-nav" id="btn-next-speech">Próxima →</button>
+                    </div>
+
+                    <div id="speech-container"></div>
+                </div>
+
+                <!-- MÓDULO 3: SIMULAÇÃO DE JÚRI -->
+                <div id="jury-module" class="module-content hidden">
+                    <h1>❓ Simulação de Defesa</h1>
+                    <p style="color: #8B949E; margin-bottom: 25px;">Prepara-te para responder às perguntas do júri.</p>
+                    
+                    <div class="speech-nav">
+                        <button class="btn-nav" id="btn-prev-jury">← Anterior</button>
+                        <span class="speech-indicator">
+                            Pergunta <span id="jury-current">1</span> de <span id="jury-total">6</span>
+                        </span>
+                        <button class="btn-nav" id="btn-next-jury">Próxima →</button>
+                    </div>
+
+                    <div id="jury-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==============================
+        // DADOS DOS MÓDULOS
+        // ==============================
+
+        const vocabulary = [
+            { english: "Food and Nutrition Literacy", phonetic: "food end nyoo-TRISH-un LIT-er-a-see", portuguese: "Literacia da Alimentação e Nutrição" },
+            { english: "Quality of Life", phonetic: "KWOL-ih-tee ov lyfe", portuguese: "Qualidade de Vida" },
+            { english: "Adolescents", phonetic: "ad-oh-LES-ents", portuguese: "Adolescentes" },
+            { english: "Public Health", phonetic: "PUB-lik helth", portuguese: "Saúde Pública" },
+            { english: "Nutritional transition", phonetic: "nyoo-TRISH-un-ul tran-ZI-shun", portuguese: "Transição nutricional" },
+            { english: "Cross-sectional study", phonetic: "cross-SEK-shun-ul STUD-ee", portuguese: "Estudo transversal" },
+            { english: "Statistically significant", phonetic: "sta-TIS-tik-lee sig-NIF-ih-kant", portuguese: "Estatisticamente significativo" },
+            { english: "Correlation", phonetic: "cor-eh-LAY-shun", portuguese: "Correlação" },
+            { english: "Hypothesis", phonetic: "hy-POTH-eh-sis", portuguese: "Hipótese" },
+            { english: "Methodology", phonetic: "meth-oh-DOL-oh-jee", portuguese: "Metodologia" },
+            { english: "Territorial inequalities", phonetic: "ter-ih-TOR-ee-ul in-ee-KWOL-ih-teez", portuguese: "Desigualdades territoriais" },
+            { english: "Structural barriers", phonetic: "STRUK-chur-ul BAIR-ee-erz", portuguese: "Barreiras estruturais" },
+            { english: "Validated instrument", phonetic: "VAL-ih-day-ted IN-stroo-ment", portuguese: "Instrumento validado" },
+            { english: "Questionnaire", phonetic: "kwes-chun-AIR", portuguese: "Questionário" },
+            { english: "Implications", phonetic: "im-pli-KAY-shunz", portuguese: "Implicações" },
+            { english: "Well-being", phonetic: "WEL-bee-ing", portuguese: "Bem-estar" },
+            { english: "Evidence-based policy", phonetic: "EV-ih-dens bayst POL-ih-see", portuguese: "Política baseada em evidência" },
+            { english: "Determinant", phonetic: "deh-TER-mih-nant", portuguese: "Determinante" },
+            { english: "Cronbach's Alpha", phonetic: "KRON-baks AL-fah", portuguese: "Alfa de Cronbach (fiabilidade)" },
+            { english: "Beta coefficient", phonetic: "BAY-tah koh-ih-FISH-unt", portuguese: "Coeficiente beta" },
+            { english: "Null result", phonetic: "nul re-ZULT", portuguese: "Resultado nulo" },
+            { english: "Sample", phonetic: "SAM-pul", portuguese: "Amostra" },
+            { english: "Double burden of malnutrition", phonetic: "DUB-ul BER-den ov mal-nyoo-TRISH-un", portuguese: "Dupla carga da malnutrição" },
+            { english: "São Tomé and Príncipe", phonetic: "sown toh-MAY end PRIN-si-peh", portuguese: "São Tomé e Príncipe" },
+            { english: "Lusophone Africa", phonetic: "LOO-zoh-fohn AFF-rik-ah", portuguese: "África lusófona" },
+            { english: "Small island developing state", phonetic: "smol EY-land deh-VEL-up-ing stayt", portuguese: "Pequeno Estado insular em desenvolvimento" },
+            { english: "Food insecurity", phonetic: "food in-seh-KYOOR-ih-tee", portuguese: "Insegurança alimentar" },
+            { english: "Regression analysis", phonetic: "re-GRESH-un an-AL-ih-sis", portuguese: "Análise de regressão" },
+            { english: "Generalisation", phonetic: "jen-er-al-ih-ZAY-shun", portuguese: "Generalização" },
+            { english: "Intervention", phonetic: "in-ter-VEN-shun", portuguese: "Intervenção" },
+        ];
+
+        const openingSpeech = [
+            { english: "Good morning, members of the jury.", portuguese: "Bom dia, membros do júri.", tip: "Olha para o júri. Sorri. Pausa." },
+            { english: "My name is Ned-Lindger Neto da Conceição.", portuguese: "O meu nome é Ned-Lindger Neto da Conceição.", tip: "Fala devagar. É o teu nome." },
+            { english: "I am here today to defend my Master's dissertation in Public Health.", portuguese: "Estou aqui hoje para defender a minha dissertação de Mestrado em Saúde Pública.", tip: "Pausa depois desta frase." },
+            { english: "My study is titled: Food and Nutrition Literacy and Quality of Life of Adolescents in São Tomé and Príncipe.", portuguese: "O meu estudo chama-se: Literacia da Alimentação e Nutrição e Qualidade de Vida dos Adolescentes em São Tomé e Príncipe.", tip: "Diz o título com orgulho." },
+            { english: "This research was motivated by a critical gap in public health knowledge.", portuguese: "Esta investigação foi motivada por uma lacuna crítica no conhecimento de saúde pública.", tip: "Gap = lacuna, espaço que ninguém estudou." },
+            { english: "São Tomé and Príncipe is experiencing a nutritional transition — a paradox where undernutrition and obesity coexist.", portuguese: "São Tomé e Príncipe está a viver uma transição nutricional — um paradoxo onde a subnutrição e a obesidade coexistem.", tip: "Paradox = paradoxo." },
+            { english: "My study involved 150 adolescents aged 12 to 18 years.", portuguese: "O meu estudo envolveu 150 adolescentes com idades entre os 12 e os 18 anos.", tip: "Involved = envolveu, incluiu." },
+            { english: "I used two validated instruments: the E-LAN scale and the KIDSCREEN-27.", portuguese: "Usei dois instrumentos validados: a escala E-LAN e o KIDSCREEN-27.", tip: "Validated = validados, aprovados cientificamente." },
+            { english: "Data were collected in schools across multiple districts and analysed using SPSS version 28.", portuguese: "Os dados foram recolhidos em escolas de vários distritos e analisados com o SPSS versão 28.", tip: "Across multiple districts = em vários distritos." },
+            { english: "My main finding was that there was no statistically significant correlation between food literacy and overall quality of life.", portuguese: "O meu resultado principal foi que não houve correlação estatisticamente significativa entre literacia alimentar e qualidade de vida global.", tip: "Main finding = resultado principal. Fala com confiança!" },
+            { english: "The correlation coefficient was r equals 0.083, with p equals 0.310.", portuguese: "O coeficiente de correlação foi r igual a 0,083, com p igual a 0,310.", tip: "Diz 'zero point zero eight three' e 'zero point three one zero'." },
+            { english: "However, the district of residence significantly predicted quality of life, with beta equals minus 0.205 and p equals 0.011.", portuguese: "No entanto, o distrito de residência predisse significativamente a qualidade de vida, com beta igual a menos 0,205 e p igual a 0,011.", tip: "However = no entanto. Este é o teu resultado mais forte!" },
+            { english: "This tells us that where an adolescent lives matters enormously for their wellbeing.", portuguese: "Isto diz-nos que o lugar onde um adolescente vive importa enormemente para o seu bem-estar.", tip: "Matters enormously = importa imensamente. Fala com convicção!" },
+            { english: "These results have important implications for public health policy in São Tomé and Príncipe.", portuguese: "Estes resultados têm implicações importantes para as políticas de saúde pública em São Tomé e Príncipe.", tip: "Implications = implicações, consequências práticas." },
+            { english: "I look forward to discussing them with you today. Thank you.", portuguese: "Aguardo com interesse discuti-los convosco hoje. Obrigado.", tip: "Termina com sorriso e inclinação da cabeça." },
+        ];
+
+        const juryQA = [
+            {
+                questionEN: "Your main hypothesis was not confirmed. How do you interpret this null result?",
+                questionPT: "A tua hipótese principal não foi confirmada. Como interpretas este resultado nulo?",
+                answerEN: "This is one of the most scientifically interesting aspects of my study. The absence of a direct correlation does not mean food literacy is irrelevant. It suggests the relationship is more complex, mediated by structural factors such as food insecurity and territorial inequalities. My results align with scholars who argue that food literacy without structural policy support has limited direct impact in resource-constrained settings.",
+                answerPT: "Esta é uma das questões mais interessantes cientificamente. A ausência de correlação direta não significa que a literacia alimentar seja irrelevante. Sugere que a relação é mais complexa, mediada por fatores estruturais como insegurança alimentar e desigualdades territoriais.",
+                tip: "NUNCA te desculpes por um resultado nulo. É uma descoberta! Diz com confiança."
+            },
+            {
+                questionEN: "Why did district of residence predict quality of life more strongly than food literacy?",
+                questionPT: "Por que razão o distrito de residência predisse a qualidade de vida mais fortemente do que a literacia alimentar?",
+                answerEN: "This finding reflects the structural determinants of health. In São Tomé and Príncipe, there are marked territorial inequalities between urban districts and rural areas. Urban adolescents have greater access to schools, health services, and social infrastructure — all of which directly affect perceived wellbeing. Food literacy is an individual competency; district of residence represents the structural environment.",
+                answerPT: "Esta descoberta reflete os determinantes estruturais da saúde. Em STP há marcadas desigualdades territoriais. Os adolescentes urbanos têm maior acesso a escolas e serviços de saúde — tudo isso afeta diretamente o bem-estar.",
+                tip: "Este é o teu resultado mais forte. Fala com entusiasmo e orgulho!"
+            },
+            {
+                questionEN: "Why did you choose a cross-sectional design?",
+                questionPT: "Por que razão escolheste um desenho transversal?",
+                answerEN: "A cross-sectional design was the most appropriate choice given the feasibility constraints of conducting research in a small island developing state with limited research infrastructure. I acknowledge that cross-sectional designs cannot establish causal direction — this is a recognised limitation. A longitudinal design would be valuable for future research.",
+                answerPT: "Um desenho transversal foi o mais adequado dadas as limitações de viabilidade em conduzir investigação num pequeno Estado insular em desenvolvimento. Reconheço que não estabelece causalidade — esta é uma limitação reconhecida.",
+                tip: "Nunca sejas defensivo. Mostra que pensaste nas alternativas e justifica bem."
+            },
+            {
+                questionEN: "Why did you use the E-LAN and KIDSCREEN-27 specifically?",
+                questionPT: "Por que razão usaste especificamente o E-LAN e o KIDSCREEN-27?",
+                answerEN: "Both instruments were selected because they are validated in Portuguese, culturally appropriate for the lusophone context, and have established psychometric properties for adolescent populations. The E-LAN showed a Cronbach's Alpha of 0.74 — acceptable reliability. The KIDSCREEN-27 has strong transcultural validity with alpha values between 0.67 and 0.81.",
+                answerPT: "Ambos estão validados em português, são culturalmente adequados para o contexto lusófono e têm propriedades psicométricas estabelecidas. O E-LAN teve Alfa de Cronbach de 0,74. O KIDSCREEN-27 tem forte validade transcultural.",
+                tip: "Menciona os alfas com segurança — mostras que conheces os teus dados."
+            },
+            {
+                questionEN: "What are the main public health implications of your findings?",
+                questionPT: "Quais são as principais implicações de saúde pública dos teus resultados?",
+                answerEN: "My findings point to three key implications. First, food literacy programmes cannot operate in isolation — they must be accompanied by structural policies addressing territorial inequalities. Second, targeting interventions at the district level may produce greater wellbeing gains. Third, my study provides the first empirical baseline for food literacy and quality of life among adolescents in São Tomé and Príncipe.",
+                answerPT: "Os meus resultados apontam para três implicações. Primeiro, programas de literacia alimentar não podem funcionar isoladamente. Segundo, intervenções ao nível do distrito podem produzir maiores ganhos. Terceiro, o meu estudo fornece a primeira linha de base empírica em STP.",
+                tip: "Este é o teu momento de brilhares! Fala com paixão sobre o valor real do teu trabalho."
+            },
+            {
+                questionEN: "What would you do differently if you repeated this study?",
+                questionPT: "O que farias de diferente se repetisses este estudo?",
+                answerEN: "With additional resources, I would increase the sample size to at least 300 and use stratified random sampling. I would include a qualitative component — focus groups or in-depth interviews. I would also add objective dietary data through 24-hour recalls. A longitudinal design would allow me to examine causal pathways over time.",
+                answerPT: "Com mais recursos, aumentaria a amostra para pelo menos 300 e usaria amostragem aleatória estratificada. Incluiria componente qualitativa — grupos focais ou entrevistas. Acrescentaria dados dietéticos objetivos e um desenho longitudinal.",
+                tip: "Esta pergunta testa autocrítica. Responde com segurança, olha para o futuro."
+            },
+        ];
+
+        const motivationMessages = [
+            "Excelente! Continua assim! 💪",
+            "Ótimo trabalho, Ned-Lindger! 🎓",
+            "Cada frase praticada é um passo para o sucesso! ✨",
+            "O júri vai ficar impressionado! 🌟",
+            "Tu consegues! São Tomé e Príncipe conta contigo! 🇸🇹",
+            "Mais uma frase dominada! Brilhante! 🔥",
+            "A tua dedicação é inspiradora! 👏",
+        ];
+
+        // ==============================
+        // ESTADO DA APLICAÇÃO
+        // ==============================
+
+        const state = {
+            currentModule: 'vocabulary',
+            vocabularyPracticed: new Array(vocabulary.length).fill(false),
+            speechPracticed: new Array(openingSpeech.length).fill(false),
+            juryPracticed: new Array(juryQA.length).fill(false),
+            currentSpeechIndex: 0,
+            currentJuryIndex: 0,
+            sessionStartTime: Date.now(),
+            lastRecordings: {},
+            mediaRecorder: null,
+            audioChunks: [],
+            isRecording: false,
+            speechRecognition: null,
+            isRecognizing: false,
+            recognizedText: '',
+        };
+
+        // ==============================
+        // INICIALIZAÇÃO
+        // ==============================
+
+        function init() {
+            // Verificar suporte de APIs
+            if (!window.speechSynthesis) {
+                showError("O teu browser não suporta síntese de voz. Usa Chrome ou Edge.");
+            }
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showError("O teu browser não suporta gravação. Usa Chrome.");
+            }
+
+            // Renderizar módulos
+            renderVocabulary();
+            renderSpeech();
+            renderJury();
+
+            // Event listeners
+            document.querySelectorAll('.module-button').forEach(btn => {
+                btn.addEventListener('click', () => switchModule(btn.dataset.module));
+            });
+
+            // Botões de navegação
+            document.getElementById('btn-prev-speech').addEventListener('click', () => prevSpeech());
+            document.getElementById('btn-next-speech').addEventListener('click', () => nextSpeech());
+            document.getElementById('btn-prev-jury').addEventListener('click', () => prevJury());
+            document.getElementById('btn-next-jury').addEventListener('click', () => nextJury());
+
+            // Atualizar timer de sessão
+            setInterval(updateSessionTime, 1000);
+
+            updateProgress();
+        }
+
+        // ==============================
+        // FUNÇÕES GERAIS
+        // ==============================
+
+        function switchModule(module) {
+            state.currentModule = module;
+            
+            // Atualizar botões
+            document.querySelectorAll('.module-button').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.module === module);
+            });
+
+            // Mostrar/ocultar conteúdo
+            document.querySelectorAll('.module-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(`${module}-module`).classList.remove('hidden');
+
+            // Atualizar progresso
+            updateProgress();
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message show';
+            errorDiv.textContent = message;
+            document.body.insertBefore(errorDiv, document.querySelector('.container'));
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        function updateProgress() {
+            let total = 0;
+            let practiced = 0;
+
+            if (state.currentModule === 'vocabulary') {
+                total = vocabulary.length;
+                practiced = state.vocabularyPracticed.filter(x => x).length;
+            } else if (state.currentModule === 'speech') {
+                total = openingSpeech.length;
+                practiced = state.speechPracticed.filter(x => x).length;
+            } else if (state.currentModule === 'jury') {
+                total = juryQA.length;
+                practiced = state.juryPracticed.filter(x => x).length;
+            }
+
+            document.getElementById('progress-text').textContent = `${practiced} de ${total} itens praticados`;
+            document.getElementById('progress-fill').style.width = `${(practiced / total) * 100}%`;
+        }
+
+        function updateSessionTime() {
+            const elapsed = Math.floor((Date.now() - state.sessionStartTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            document.getElementById('session-time').textContent = `Sessão: ${minutes} min`;
+        }
+
+        function speak(text, rate = 0.8) {
+            if (!window.speechSynthesis) return;
+
+            // Cancelar fala anterior
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-GB';
+            utterance.rate = rate;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function getRandomMotivation() {
+            return motivationMessages[Math.floor(Math.random() * motivationMessages.length)];
+        }
+
+        function showMotivationMessage(container) {
+            const msg = document.createElement('div');
+            msg.className = 'motivation-message';
+            msg.textContent = getRandomMotivation();
+            container.insertAdjacentElement('beforeend', msg);
+            setTimeout(() => msg.remove(), 3000);
+        }
+
+        // ==============================
+        // MÓDULO 1: VOCABULÁRIO
+        // ==============================
+
+        function renderVocabulary() {
+            const container = document.getElementById('vocabulary-container');
+            container.innerHTML = '';
+
+            vocabulary.forEach((word, index) => {
+                const card = document.createElement('div');
+                card.className = `card flashcard ${state.vocabularyPracticed[index] ? 'completed' : ''}`;
+                card.innerHTML = `
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <div class="flashcard-text">${word.english}</div>
+                            <div class="flashcard-subtitle">Clica para revelar</div>
+                        </div>
+                        <div class="flashcard-back">
+                            <div class="flashcard-text" style="color: #2EA043;">${word.portuguese}</div>
+                            <div class="flashcard-subtitle">${word.phonetic}</div>
+                        </div>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => {
+                    card.classList.toggle('flipped');
+                });
+
+                container.appendChild(card);
+
+                // Card de ações
+                const actionsCard = document.createElement('div');
+                actionsCard.className = `card ${state.vocabularyPracticed[index] ? 'completed' : ''}`;
+                actionsCard.innerHTML = `
+                    <div class="button-group">
+                        <button class="btn-listen" onclick="speak('${word.english.replace(/'/g, "\\'")}', 0.8)">
+                            🔊 Ouvir
+                        </button>
+                        <button class="btn-slow" onclick="speak('${word.english.replace(/'/g, "\\'")}', 0.6)">
+                            🔊 Lento
+                        </button>
+                        <button class="btn-practiced ${state.vocabularyPracticed[index] ? 'marked' : ''}" 
+                                onclick="markVocabularyPracticed(${index})">
+                            ${state.vocabularyPracticed[index] ? '✅ Já praticado' : '✅ Já praticei'}
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(actionsCard);
+            });
+
+            updateVocabularyStats();
+        }
+
+        function markVocabularyPracticed(index) {
+            state.vocabularyPracticed[index] = !state.vocabularyPracticed[index];
+            renderVocabulary();
+            updateProgress();
+            if (state.vocabularyPracticed[index]) {
+                showMotivationMessage(document.getElementById('vocabulary-container'));
+            }
+        }
+
+        function updateVocabularyStats() {
+            const known = state.vocabularyPracticed.filter(x => x).length;
+            const unknown = vocabulary.length - known;
+            document.getElementById('known-count').textContent = known;
+            document.getElementById('unknown-count').textContent = unknown;
+        }
+
+        // ==============================
+        // MÓDULO 2: DISCURSO
+        // ==============================
+
+        function renderSpeech() {
+            const container = document.getElementById('speech-container');
+            const item = openingSpeech[state.currentSpeechIndex];
+
+            container.innerHTML = `
+                <div class="card ${state.speechPracticed[state.currentSpeechIndex] ? 'completed' : ''}">
+                    <div class="card-content">
+                        <div class="english-text">${item.english}</div>
+                        <div class="phonetic-text">${item.phonetic || ''}</div>
+                        <div class="portuguese-text">${item.portuguese}</div>
+                    </div>
+
+                    <div class="tip-box">
+                        💡 ${item.tip}
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-listen" onclick="speak('${item.english.replace(/'/g, "\\'")}', 0.8)">
+                            🔊 Ouvir
+                        </button>
+                        <button class="btn-slow" onclick="speak('${item.english.replace(/'/g, "\\'")}', 0.6)">
+                            🔊 Lento
+                        </button>
+                        <button class="btn-record" onclick="startRecordingSpeechWithStop(${state.currentSpeechIndex})">
+                            🎙 Gravar
+                        </button>
+                        <button class="btn-practiced ${state.speechPracticed[state.currentSpeechIndex] ? 'marked' : ''}"
+                                onclick="markSpeechPracticed(${state.currentSpeechIndex})">
+                            ${state.speechPracticed[state.currentSpeechIndex] ? '✅ Praticado' : '✅ Já praticei'}
+                        </button>
+                    </div>
+
+                    <div id="speech-${state.currentSpeechIndex}-validation"></div>
+                </div>
+            `;
+
+            // Atualizar navegação
+            document.getElementById('speech-current').textContent = state.currentSpeechIndex + 1;
+            document.getElementById('speech-total').textContent = openingSpeech.length;
+            document.getElementById('btn-prev-speech').disabled = state.currentSpeechIndex === 0;
+            document.getElementById('btn-next-speech').disabled = state.currentSpeechIndex === openingSpeech.length - 1;
+        }
+
+        function nextSpeech() {
+            if (state.currentSpeechIndex < openingSpeech.length - 1) {
+                state.currentSpeechIndex++;
+                renderSpeech();
+            }
+        }
+
+        function prevSpeech() {
+            if (state.currentSpeechIndex > 0) {
+                state.currentSpeechIndex--;
+                renderSpeech();
+            }
+        }
+
+        function markSpeechPracticed(index) {
+            state.speechPracticed[index] = !state.speechPracticed[index];
+            renderSpeech();
+            updateProgress();
+            if (state.speechPracticed[index]) {
+                showMotivationMessage(document.getElementById('speech-container'));
+            }
+        }
+
+        function startRecordingSpeech(index) {
+            startRecording(`speech-${index}`);
+        }
+
+        function startRecordingSpeechWithStop(index) {
+            if (!state.isRecording) {
+                startRecording(`speech-${index}`);
+                // Depois de 5 segundos, parar automaticamente
+                setTimeout(() => {
+                    if (state.isRecording) {
+                        stopRecording();
+                    }
+                }, 5000);
+            }
+        }
+
+        // ==============================
+        // MÓDULO 3: SIMULAÇÃO DE JÚRI
+        // ==============================
+
+        function renderJury() {
+            const container = document.getElementById('jury-container');
+            const qa = juryQA[state.currentJuryIndex];
+
+            container.innerHTML = `
+                <div class="card ${state.juryPracticed[state.currentJuryIndex] ? 'completed' : ''}">
+                    <h2 style="margin-top: 0;">A Pergunta</h2>
+                    <div class="card-content">
+                        <div class="english-text">${qa.questionEN}</div>
+                        <div class="portuguese-text">${qa.questionPT}</div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn-listen" onclick="speak('${qa.questionEN.replace(/'/g, "\\'")}', 0.8)">
+                            🔊 Ouvir pergunta
+                        </button>
+                    </div>
+
+                    <div class="prep-area">
+                        <div class="prep-text">Pensa na tua resposta...</div>
+                        <button class="btn-secondary" onclick="toggleAnswer(${state.currentJuryIndex})">
+                            👁️ Ver resposta
+                        </button>
+                    </div>
+
+                    <div id="answer-${state.currentJuryIndex}" class="hidden">
+                        <h2>A Resposta</h2>
+                        <div class="card-content">
+                            <div class="english-text">${qa.answerEN}</div>
+                            <div class="portuguese-text">${qa.answerPT}</div>
+                        </div>
+
+                        <div class="tip-box">
+                            💡 ${qa.tip}
+                        </div>
+
+                        <div class="button-group">
+                            <button class="btn-listen" onclick="speak('${qa.answerEN.replace(/'/g, "\\'")}', 0.8)">
+                                🔊 Ouvir resposta
+                            </button>
+                            <button class="btn-record" onclick="startRecordingJuryWithStop(${state.currentJuryIndex})">
+                                🎙 Gravar minha resposta
+                            </button>
+                            <button class="btn-practiced ${state.juryPracticed[state.currentJuryIndex] ? 'marked' : ''}"
+                                    onclick="markJuryPracticed(${state.currentJuryIndex})">
+                                ${state.juryPracticed[state.currentJuryIndex] ? '✅ Praticado' : '✅ Já praticei'}
+                            </button>
+                        </div>
+
+                        <div id="jury-${state.currentJuryIndex}-validation"></div>
+                    </div>
+                </div>
+            `;
+
+            // Atualizar navegação
+            document.getElementById('jury-current').textContent = state.currentJuryIndex + 1;
+            document.getElementById('jury-total').textContent = juryQA.length;
+            document.getElementById('btn-prev-jury').disabled = state.currentJuryIndex === 0;
+            document.getElementById('btn-next-jury').disabled = state.currentJuryIndex === juryQA.length - 1;
+        }
+
+        function toggleAnswer(index) {
+            const answerDiv = document.getElementById(`answer-${index}`);
+            answerDiv.classList.toggle('hidden');
+        }
+
+        function nextJury() {
+            if (state.currentJuryIndex < juryQA.length - 1) {
+                state.currentJuryIndex++;
+                renderJury();
+            }
+        }
+
+        function prevJury() {
+            if (state.currentJuryIndex > 0) {
+                state.currentJuryIndex--;
+                renderJury();
+            }
+        }
+
+        function markJuryPracticed(index) {
+            state.juryPracticed[index] = !state.juryPracticed[index];
+            renderJury();
+            updateProgress();
+            if (state.juryPracticed[index]) {
+                showMotivationMessage(document.getElementById('jury-container'));
+            }
+        }
+
+        function startRecordingJury(index) {
+            startRecording(`jury-${index}`);
+        }
+
+        function startRecordingJuryWithStop(index) {
+            if (!state.isRecording) {
+                startRecording(`jury-${index}`);
+                // Depois de 8 segundos, parar automaticamente (respostas são mais longas)
+                setTimeout(() => {
+                    if (state.isRecording) {
+                        stopRecording();
+                    }
+                }, 8000);
+            }
+        }
+
+        // ==============================
+        // GRAVAÇÃO DE ÁUDIO COM VALIDAÇÃO
+        // ==============================
+
+        async function startRecording(itemId) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                state.mediaRecorder = new MediaRecorder(stream);
+                state.audioChunks = [];
+                state.isRecording = true;
+
+                state.mediaRecorder.ondataavailable = (event) => {
+                    state.audioChunks.push(event.data);
+                };
+
+                state.mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(state.audioChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    state.lastRecordings[itemId] = audioUrl;
+                    state.isRecording = false;
+                    
+                    // Iniciar reconhecimento de fala
+                    await recognizeAndValidate(itemId);
+                };
+
+                state.mediaRecorder.start();
+                
+            } catch (error) {
+                showError("Permissão de microfone negada. Ativa nas definições do browser.");
+            }
+        }
+
+        function stopRecording() {
+            if (state.mediaRecorder && state.isRecording) {
+                state.mediaRecorder.stop();
+            }
+        }
+
+        // ==============================
+        // RECONHECIMENTO DE FALA E VALIDAÇÃO
+        // ==============================
+
+        async function recognizeAndValidate(itemId) {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-GB';
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            const recordingBlob = new Blob(state.audioChunks, { type: 'audio/wav' });
+            const audioUrl = URL.createObjectURL(recordingBlob);
+
+            // Criar elemento de áudio temporário para reproduzir
+            const audio = new Audio(audioUrl);
+            audio.onended = () => URL.revokeObjectURL(audioUrl);
+
+            // Usar Web Speech API Recognition
+            return new Promise((resolve) => {
+                recognition.onstart = () => {
+                    updateValidationUI(itemId, 'Aguardando reconhecimento...', null);
+                };
+
+                recognition.onresult = (event) => {
+                    let transcript = '';
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        transcript += event.results[i][0].transcript + ' ';
+                    }
+                    
+                    state.recognizedText = transcript.trim();
+                    
+                    // Validar contra o texto esperado
+                    validatePronunciation(itemId, state.recognizedText);
+                    resolve();
+                };
+
+                recognition.onerror = (event) => {
+                    updateValidationUI(itemId, `Erro: ${event.error}`, null);
+                    resolve();
+                };
+
+                // Reproduzir o áudio gravado para reconhecimento
+                // Nota: Web Speech Recognition funciona melhor com áudio em tempo real
+                // Para ficheiros gravados, usamos uma abordagem alternativa
+                recognition.start();
+                audio.play();
+            });
+        }
+
+        function validatePronunciation(itemId, recognizedText) {
+            let expectedText = '';
+            let moduleType = '';
+
+            // Determinar o texto esperado baseado no tipo de item
+            if (itemId.startsWith('speech-')) {
+                const index = parseInt(itemId.split('-')[1]);
+                expectedText = openingSpeech[index].english;
+                moduleType = 'speech';
+            } else if (itemId.startsWith('jury-')) {
+                const index = parseInt(itemId.split('-')[1]);
+                expectedText = juryQA[index].answerEN;
+                moduleType = 'jury';
+            }
+
+            // Calcular similaridade
+            const similarity = calculateSimilarity(
+                normalizeText(expectedText),
+                normalizeText(recognizedText)
+            );
+
+            const isCorrect = similarity >= 0.7; // 70% de similaridade ou mais é considerado correto
+
+            updateValidationUI(itemId, recognizedText, {
+                isCorrect,
+                expectedText,
+                similarity: Math.round(similarity * 100),
+                moduleType
+            });
+        }
+
+        function normalizeText(text) {
+            return text
+                .toLowerCase()
+                .replace(/[.,!?;:—–-]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function calculateSimilarity(str1, str2) {
+            // Algoritmo de Levenshtein para calcular similaridade
+            const len1 = str1.length;
+            const len2 = str2.length;
+            const matrix = Array(len2 + 1).fill(null).map(() => Array(len1 + 1).fill(0));
+
+            for (let i = 0; i <= len1; i++) matrix[0][i] = i;
+            for (let j = 0; j <= len2; j++) matrix[j][0] = j;
+
+            for (let j = 1; j <= len2; j++) {
+                for (let i = 1; i <= len1; i++) {
+                    const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1;
+                    matrix[j][i] = Math.min(
+                        matrix[j][i - 1] + 1,
+                        matrix[j - 1][i] + 1,
+                        matrix[j - 1][i - 1] + indicator
+                    );
+                }
+            }
+
+            const distance = matrix[len2][len1];
+            const maxLen = Math.max(len1, len2);
+            return 1 - (distance / maxLen);
+        }
+
+        function updateValidationUI(itemId, recognizedText, validationData) {
+            const container = document.getElementById(`${itemId}-validation`);
+            
+            if (!container) {
+                // Criar container se não existir
+                const speechContainer = document.getElementById('speech-container') || document.getElementById('jury-container');
+                const newContainer = document.createElement('div');
+                newContainer.id = `${itemId}-validation`;
+                speechContainer.appendChild(newContainer);
+            }
+
+            if (!validationData) {
+                // Mostrar apenas o status de reconhecimento
+                document.getElementById(`${itemId}-validation`).innerHTML = `
+                    <div class="recording-status">
+                        <div class="recording-indicator"></div>
+                        ${recognizedText}
+                    </div>
+                `;
+                return;
+            }
+
+            // Mostrar resultado detalhado
+            const { isCorrect, similarity } = validationData;
+            const resultClass = isCorrect ? 'correct' : 'incorrect';
+            const resultIcon = isCorrect ? '✅' : '❌';
+            const resultText = isCorrect ? 'Excelente!' : 'Precisa de ajustes';
+
+            document.getElementById(`${itemId}-validation`).innerHTML = `
+                <div class="validation-result ${resultClass}">
+                    <div class="validation-title">
+                        ${resultIcon} ${resultText}
+                    </div>
+
+                    <div class="accuracy-score">
+                        <div class="accuracy-bar">
+                            <div class="accuracy-fill" style="width: ${similarity}%"></div>
+                        </div>
+                        <div class="accuracy-text">${similarity}%</div>
+                    </div>
+
+                    <div class="validation-label">O que foi reconhecido:</div>
+                    <div class="validation-text">
+                        "${recognizedText || '(nenhum som detectado)'}"
+                    </div>
+
+                    <div class="validation-label">O que era esperado:</div>
+                    <div class="validation-text">
+                        "${validationData.expectedText}"
+                    </div>
+
+                    ${similarity < 100 ? `
+                        <div style="margin-top: 15px; padding: 10px; background-color: #0F1923; border-radius: 6px; border-left: 3px solid #D4A017; font-size: 13px; color: #D4A017;">
+                            💡 Dica: Repete a frase com mais cuidado. Foca na pronúncia de cada palavra.
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            showMotivationMessage(document.getElementById(`${itemId}-validation`));
+        }
+
+        // ==============================
+        // INICIAR APLICAÇÃO
+        // ==============================
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
