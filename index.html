@@ -531,17 +531,65 @@
             display: block;
         }
 
+        /* Menu Hambúrguer */
+        .hamburger-menu {
+            display: none;
+            background: none;
+            border: none;
+            color: #D4A017;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu:hover {
+            color: #1F6FEB;
+        }
+
+        .menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+        }
+
+        .menu-overlay.active {
+            display: block;
+        }
+
         /* Responsividade */
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
             }
 
+            .hamburger-menu {
+                display: block;
+            }
+
             .sidebar {
-                width: 100%;
-                height: auto;
-                border-right: none;
-                border-bottom: 1px solid #1F6FEB;
+                position: fixed;
+                top: 70px;
+                left: -250px;
+                width: 250px;
+                height: calc(100vh - 70px);
+                background-color: #162333;
+                border-right: 1px solid #1F6FEB;
+                border-bottom: none;
+                padding: 20px;
+                overflow-y: auto;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+                transition: left 0.3s ease;
+                z-index: 999;
+            }
+
+            .sidebar.active {
+                left: 0;
             }
 
             .content-area {
@@ -695,6 +743,7 @@
     </style>
 </head>
 <body>
+    <div class="menu-overlay" id="menu-overlay"></div>
     <div class="container">
         <!-- BARRA LATERAL -->
         <div class="sidebar">
@@ -714,9 +763,12 @@
         <div class="main-content">
             <!-- BARRA DE PROGRESSO -->
             <div class="progress-bar-container">
-                <div class="progress-info">
-                    <span class="progress-label" id="progress-text">0 de 30 itens praticados</span>
-                    <span class="session-time" id="session-time">Sessão: 0 min</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <button class="hamburger-menu" id="hamburger-btn">☰</button>
+                    <div class="progress-info" style="flex: 1; margin: 0;">
+                        <span class="progress-label" id="progress-text">0 de 30 itens praticados</span>
+                        <span class="session-time" id="session-time">Sessão: 0 min</span>
+                    </div>
                 </div>
                 <div class="progress-bar">
                     <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
@@ -930,8 +982,29 @@
             renderJury();
 
             // Event listeners
+            const hamburgerBtn = document.getElementById('hamburger-btn');
+            const sidebar = document.querySelector('.sidebar');
+            const menuOverlay = document.getElementById('menu-overlay');
+
+            // Toggle menu ao clicar no hambúrguer
+            hamburgerBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+                menuOverlay.classList.toggle('active');
+            });
+
+            // Fechar menu ao clicar no overlay
+            menuOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                menuOverlay.classList.remove('active');
+            });
+
+            // Fechar menu ao selecionar um módulo
             document.querySelectorAll('.module-button').forEach(btn => {
-                btn.addEventListener('click', () => switchModule(btn.dataset.module));
+                btn.addEventListener('click', () => {
+                    switchModule(btn.dataset.module);
+                    sidebar.classList.remove('active');
+                    menuOverlay.classList.remove('active');
+                });
             });
 
             // Botões de navegação
